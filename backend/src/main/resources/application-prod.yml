@@ -1,0 +1,86 @@
+# ══════════════════════════════════════════════════════════════
+#   MockIQ — application-prod.yml
+#   Production overrides — activated when SPRING_PROFILES_ACTIVE=prod
+#
+#   This file is SAFE to commit to GitHub.
+#   It contains NO secrets — only structural config overrides.
+#   All actual secret values come from Render environment variables.
+#
+#   How Spring loads this:
+#     1. application.yml loads first  (base config)
+#     2. application-prod.yml loads second (overrides base)
+#   So only the keys defined here are overridden.
+# ══════════════════════════════════════════════════════════════
+
+spring:
+
+  # ── MySQL (Aiven) ─────────────────────────────────────────
+  # DB_URL on Render will be the Aiven JDBC connection string.
+  # Aiven requires SSL — the URL must include sslmode=require.
+  # Full URL format set in Render env vars:
+  # jdbc:mysql://<host>:<port>/<db>?ssl-mode=REQUIRED&serverTimezone=UTC
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      # Aiven free tier has max 25 connections — stay well under
+      maximum-pool-size: 5
+      minimum-idle: 2
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 600000
+      # Aiven closes idle connections — keepalive prevents stale conn errors
+      keepalive-time: 60000
+      connection-test-query: SELECT 1
+
+  # ── JPA ───────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      # NEVER use create/create-drop/update in production.
+      # validate = Hibernate checks schema matches entities, never changes it.
+      # Schema must already exist in Aiven before deploying.
+      ddl-auto: update
+    # Never log SQL in production — performance + security risk
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.MySQLDialect
+
+# ── Server ────────────────────────────────────────────────
+server:
+  port: ${PORT:8080}
+  # Render injects PORT env var automatically — we read it here.
+  # On Render free tier, PORT is always 10000 internally.
+  error:
+    # Never expose error messages in production responses
+    include-message: never
+    include-stacktrace: never
+
+# ── Logging ───────────────────────────────────────────────
+# Production: minimal logging to reduce noise + Render log storage
+logging:
+  level:
+    com.mockiq: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    root: WARN
+
+# ── Swagger — DISABLED in production ──────────────────────
+# Never expose your full API surface publicly in production.
+# Re-enable temporarily if you need to debug a live endpoint.
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+# ── CORS ──────────────────────────────────────────────────
+# Set CORS_ALLOWED_ORIGINS in Render to your Vercel frontend URL.
+# Example: https://mockiq.vercel.app
+# Multiple origins: https://mockiq.vercel.app,https://www.mockiq.vercel.app
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS}

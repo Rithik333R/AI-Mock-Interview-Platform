@@ -1,0 +1,135 @@
+# ══════════════════════════════════════════════════════════════
+#   AI-Mock-Interview-Platform — Root .gitignore
+#   Monorepo: covers backend/ and mockiq-frontend/ together.
+#   Place this file at the project root (same level as backend/)
+# ══════════════════════════════════════════════════════════════
+
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║   SECRETS — Most Important Section                       ║
+# ║   These files contain real API keys and passwords.       ║
+# ║   They must NEVER be committed under any circumstances.  ║
+# ╚══════════════════════════════════════════════════════════╝
+**/.env
+**/.env.local
+**/.env.development
+**/.env.development.local
+**/.env.production
+**/.env.production.local
+**/.env.test
+**/.env.test.local
+# Catch any other .env variants in any subfolder
+**/.env.*
+
+# Exception: .env.example files ARE safe to commit
+# They contain no real values — only variable name templates
+!**/.env.example
+
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║   BACKEND — Java / Spring Boot / Maven                   ║
+# ╚══════════════════════════════════════════════════════════╝
+
+# Maven build output
+backend/target/
+!backend/.mvn/wrapper/maven-wrapper.jar
+
+# Compiled Java classes
+backend/**/*.class
+
+# Packaged JARs/WARs (Render builds its own from source)
+backend/**/*.jar
+backend/**/*.war
+backend/**/*.ear
+
+# Spring Boot log
+backend/spring-shell.log
+
+# IntelliJ IDEA project files
+backend/.idea/
+backend/**/*.iml
+backend/**/*.iws
+backend/**/*.ipr
+backend/out/
+
+# Eclipse
+backend/.apt_generated
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings/
+backend/.springBeans
+backend/.sts4-cache/
+
+# Logs inside backend
+backend/logs/
+backend/**/*.log
+
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║   FRONTEND — React / Vite / Node                         ║
+# ╚══════════════════════════════════════════════════════════╝
+
+# Node modules (300MB+ — never commit)
+mockiq-frontend/node_modules/
+
+# Vite build output (Vercel builds its own)
+mockiq-frontend/dist/
+mockiq-frontend/dist-ssr/
+
+# Vite internal cache
+mockiq-frontend/.vite/
+mockiq-frontend/vite.config.js.timestamp-*
+
+# VS Code workspace files
+mockiq-frontend/.vscode/
+!mockiq-frontend/.vscode/extensions.json
+
+# Logs inside frontend
+mockiq-frontend/logs/
+mockiq-frontend/**/*.log
+mockiq-frontend/npm-debug.log*
+mockiq-frontend/yarn-debug.log*
+mockiq-frontend/yarn-error.log*
+mockiq-frontend/pnpm-debug.log*
+
+# Test coverage output
+mockiq-frontend/coverage/
+mockiq-frontend/.nyc_output/
+
+# TypeScript build info
+mockiq-frontend/**/*.tsbuildinfo
+
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║   OS ARTIFACTS — Cross-platform noise files              ║
+# ╚══════════════════════════════════════════════════════════╝
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Linux
+*~
+
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║   MISC                                                   ║
+# ╚══════════════════════════════════════════════════════════╝
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+
+# Docker local volumes (if added later)
+**/docker/mysql/data/
+**/docker/redis/data/
