@@ -25,18 +25,16 @@ export default defineConfig({
     },
   },
 
-  server: {
-    port: 3000,
-    // Proxy API calls to Spring Boot backend during development.
-    // Avoids CORS issues — all /api/* calls go to localhost:8080.
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-        secure: false,
-      },
+server: {
+  port: 3000,
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8080',
+      changeOrigin: true,
+      secure: false,
     },
   },
+},
 
   build: {
     outDir: 'dist',

@@ -17,19 +17,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
- * SecurityConfig — the real, permanent security configuration.
- * Replaces the temporary Phase 0 version.
+ * SecurityConfig — JWT security + CORS configuration.
  *
- * Key decisions:
- *   - STATELESS sessions: we never store session on the server.
- *     Every request must carry a JWT. This makes the backend
- *     horizontally scalable (no sticky sessions needed).
- *   - CSRF disabled: CSRF attacks require cookies. We use
- *     Authorization headers, so CSRF doesn't apply.
- *   - BCrypt: industry standard for password hashing.
- *     Cost factor 12 = ~300ms per hash (slow enough to deter brute force).
+ * CORS fix (F15):
+ *   Replaced missing/broken CORS setup with a proper
+ *   CorsConfigurationSource bean. This is the ONLY correct
+ *   way to configure CORS with Spring Security — putting it
+ *   in a @CrossOrigin annotation or a WebMvcConfigurer is
+ *   NOT enough when Spring Security is present because the
+ *   security filter chain intercepts requests before MVC.
  */
 @Configuration
 @EnableWebSecurity
@@ -39,22 +43,20 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsServiceImpl  userDetailsService;
 
-    /**
-     * Public endpoints — no JWT required.
-     * Everything else requires a valid token.
-     */
     private static final String[] PUBLIC_URLS = {
-            "/api/auth/**",      // register, login
-            "/api/health",       // health check
-            "/v3/api-docs/**",   // OpenAPI JSON spec
-            "/swagger-ui/**",    // Swagger UI static assets
-            "/swagger-ui.html"   // Swagger UI entry point
+            "/api/auth/**",
+            "/api/health",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http)
-            throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // Apply our CORS config — MUST be before csrf disable
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
@@ -62,15 +64,12 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-                // Stateless — no HttpSession, no cookies
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // Use our DaoAuthenticationProvider
                 .authenticationProvider(authenticationProvider())
 
-                // Run our JWT filter before Spring's username/password filter
                 .addFilterBefore(jwtAuthFilter,
                         UsernamePasswordAuthenticationFilter.class);
 
@@ -78,19 +77,72 @@ public class SecurityConfig {
     }
 
     /**
-     * PasswordEncoder — BCrypt with strength 12.
-     * @Bean makes it injectable anywhere in the app.
+     * corsConfigurationSource — defines which origins, methods,
+     * and headers are allowed.
+     *
+     * Local dev:  http://localhost:3000 and http://localhost:5173
+     * Production: set CORS_ALLOWED_ORIGINS env var in Render
+     *             e.g. https://mockiq.vercel.app
+     *
+     * Why not use @CrossOrigin on controllers?
+     *   Spring Security's filter chain runs BEFORE Spring MVC.
+     *   A preflight OPTIONS request hits Security first and gets
+     *   rejected before @CrossOrigin ever sees it.
+     *   The CorsConfigurationSource bean registered here runs
+     *   inside the security chain — the correct approach.
      */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // Read allowed origins from environment variable.
+        // Falls back to localhost for local development.
+        String allowedOriginsEnv = System.getenv("CORS_ALLOWED_ORIGINS");
+
+        if (allowedOriginsEnv != null && !allowedOriginsEnv.isBlank()) {
+            // Production: split comma-separated list from env var
+            // e.g. "https://mockiq.vercel.app,https://www.mockiq.vercel.app"
+            List<String> origins = Arrays.stream(allowedOriginsEnv.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isBlank())
+                    .toList();;
+            config.setAllowedOrigins(origins);
+        } else {
+            // Local development fallback
+            config.setAllowedOrigins(List.of(
+                    "http://localhost:3000",
+                    "http://localhost:5173",
+                    "http://127.0.0.1:3000",
+                    "http://127.0.0.1:5173"
+            ));
+        }
+
+        // Allow all standard HTTP methods
+        config.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+        ));
+
+        // Allow all headers — required for Authorization: Bearer token
+        config.setAllowedHeaders(List.of("*"));
+
+        // Allow credentials — required for Authorization header
+        config.setAllowCredentials(true);
+
+        // Cache preflight response for 1 hour (3600 seconds)
+        // Reduces number of OPTIONS preflight requests
+        config.setMaxAge(3600L);
+
+        // Apply this config to all endpoints
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
 
-    /**
-     * AuthenticationProvider — tells Spring Security how to:
-     *   1. Load the user (via UserDetailsService)
-     *   2. Verify the password (via PasswordEncoder)
-     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -99,11 +151,6 @@ public class SecurityConfig {
         return provider;
     }
 
-    /**
-     * AuthenticationManager — used in AuthService to trigger
-     * the actual login (email + password) verification.
-     * Spring Boot auto-configures this; we just expose it as a bean.
-     */
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration config) throws Exception {

@@ -36,8 +36,7 @@ WORKDIR /app
 RUN addgroup -S mockiq && adduser -S mockiq -G mockiq
 
 # Copy only the built JAR from the builder stage
-COPY --from=builder /app/target/mockiq-backend.jar app.jar
-
+COPY --from=builder /app/target/*.jar app.jar
 # Give ownership to non-root user
 RUN chown mockiq:mockiq app.jar
 
