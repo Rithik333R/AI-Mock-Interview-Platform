@@ -7,7 +7,7 @@
 
 /* ── API ────────────────────────────────────────────── */
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
-export const API_TIMEOUT  = 30_000   // 30 seconds
+export const API_TIMEOUT  = 120_000   // 30 seconds
 
 /* ── Auth ───────────────────────────────────────────── */
 export const TOKEN_KEY        = 'mockiq_access_token'
