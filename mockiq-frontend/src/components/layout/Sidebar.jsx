@@ -63,11 +63,14 @@ export default function Sidebar() {
 
             <motion.aside
               key="mobile-sidebar-panel"
-              initial={{ x: -280 }}
+              initial={{ x: '-100%' }}
               animate={{ x: 0 }}
-              exit={{ x: -280 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed left-0 top-0 z-[60] h-screen w-[280px] overflow-hidden border-r border-[var(--color-border)] bg-[var(--color-surface)] md:hidden"
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed left-0 top-0 z-[60] h-screen overflow-hidden border-r border-[var(--color-border)] bg-[var(--color-surface)] shadow-[0_20px_80px_rgba(0,0,0,0.55)] md:hidden"
+              style={{
+                width: 'min(84vw, 320px)',
+              }}
             >
               <SidebarContent
                 collapsed={false}
@@ -101,20 +104,20 @@ function SidebarContent({
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      <div className="flex h-16 shrink-0 items-center justify-between px-4">
+      <div className="flex h-20 shrink-0 items-center justify-between px-5">
         <div
           className="flex min-w-0 items-center gap-3"
           style={{ justifyContent: compact ? 'center' : 'flex-start' }}
         >
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
             style={{
               background:
                 'linear-gradient(135deg, var(--color-indigo), var(--color-cyan))',
               boxShadow: '0 0 18px rgba(99,102,241,0.35)',
             }}
           >
-            <Sparkles size={18} color="#fff" strokeWidth={2} />
+            <Sparkles size={20} color="#fff" strokeWidth={2} />
           </div>
 
           <AnimatePresence initial={false}>
@@ -125,7 +128,7 @@ function SidebarContent({
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -8 }}
                 transition={{ duration: 0.18 }}
-                className="truncate font-display text-lg font-extrabold tracking-tight"
+                className="truncate font-display text-[1.35rem] font-extrabold tracking-tight"
                 style={{
                   background:
                     'linear-gradient(135deg, var(--color-indigo-light), var(--color-cyan))',
@@ -143,17 +146,17 @@ function SidebarContent({
           <button
             type="button"
             onClick={onCloseMobile}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-border-alt)] hover:text-[var(--color-text-primary)]"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[var(--color-border)] text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-border-alt)] hover:text-[var(--color-text-primary)]"
             aria-label="Close menu"
           >
-            <X size={18} strokeWidth={2} />
+            <X size={20} strokeWidth={2} />
           </button>
         )}
       </div>
 
       <div className="divider" />
 
-      <nav className="flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 py-4">
+      <nav className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden px-4 py-5">
         {NAV_ITEMS.map((item) => (
           <SidebarNavItem
             key={item.path}
@@ -166,16 +169,16 @@ function SidebarContent({
 
       <div className="divider" />
 
-      <div className="shrink-0 space-y-3 p-3">
+      <div className="shrink-0 space-y-3 p-4">
         <div
-          className="flex items-center gap-3 rounded-xl px-3 py-3"
+          className="flex items-center gap-3 rounded-2xl px-3 py-3"
           style={{
             justifyContent: compact ? 'center' : 'flex-start',
             background: compact ? 'transparent' : 'rgba(99,102,241,0.035)',
           }}
         >
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold text-white"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-display text-sm font-bold text-white"
             style={{
               background:
                 'linear-gradient(135deg, var(--color-indigo), var(--color-violet))',
@@ -208,11 +211,11 @@ function SidebarContent({
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--color-text-muted)] transition-all hover:bg-[rgba(239,68,68,0.08)] hover:text-[var(--color-error)]"
+          className="flex min-h-11 w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium text-[var(--color-text-muted)] transition-all hover:bg-[rgba(239,68,68,0.08)] hover:text-[var(--color-error)]"
           style={{ justifyContent: compact ? 'center' : 'flex-start' }}
           title="Log out"
         >
-          <LogOut size={17} strokeWidth={1.9} className="shrink-0" />
+          <LogOut size={18} strokeWidth={1.9} className="shrink-0" />
 
           <AnimatePresence initial={false}>
             {!compact && (
@@ -234,14 +237,14 @@ function SidebarContent({
           <button
             type="button"
             onClick={onToggleSidebar}
-            className="flex w-full items-center justify-center rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-3 py-2.5 text-sm font-medium text-[var(--color-text-muted)] transition-all hover:border-[var(--color-border-alt)] hover:text-[var(--color-text-primary)]"
+            className="flex min-h-11 w-full items-center justify-center rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-3 py-2.5 text-sm font-medium text-[var(--color-text-muted)] transition-all hover:border-[var(--color-border-alt)] hover:text-[var(--color-text-primary)]"
             title={compact ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {compact ? (
-              <ChevronRight size={17} strokeWidth={2} />
+              <ChevronRight size={18} strokeWidth={2} />
             ) : (
               <>
-                <ChevronLeft size={17} strokeWidth={2} />
+                <ChevronLeft size={18} strokeWidth={2} />
                 <span className="ml-2">Collapse</span>
               </>
             )}
@@ -264,7 +267,7 @@ function SidebarNavItem({ item, compact, onClick }) {
     >
       {({ isActive }) => (
         <div
-          className="relative flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-all"
+          className="relative flex min-h-12 items-center gap-4 rounded-2xl border px-4 py-3 transition-all active:scale-[0.99]"
           style={{
             justifyContent: compact ? 'center' : 'flex-start',
             background: isActive
@@ -281,7 +284,7 @@ function SidebarNavItem({ item, compact, onClick }) {
           {isActive && (
             <motion.div
               layoutId="sidebar-active-indicator"
-              className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full"
+              className="absolute left-0 top-1/2 h-8 w-[3px] -translate-y-1/2 rounded-r-full"
               style={{
                 background:
                   'linear-gradient(180deg, var(--color-indigo), var(--color-cyan))',
@@ -292,7 +295,7 @@ function SidebarNavItem({ item, compact, onClick }) {
           )}
 
           <Icon
-            size={18}
+            size={21}
             strokeWidth={isActive ? 2.2 : 1.8}
             className="shrink-0"
             style={{
@@ -310,7 +313,7 @@ function SidebarNavItem({ item, compact, onClick }) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -8 }}
                 transition={{ duration: 0.18 }}
-                className="truncate text-sm font-semibold"
+                className="truncate text-[1rem] font-semibold"
                 style={{
                   color: isActive
                     ? 'var(--color-text-primary)'
