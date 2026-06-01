@@ -1,123 +1,633 @@
+/*
+ * MockIQ — Global Stylesheet
+ * ═══════════════════════════════════════════════════════
+ * Tailwind CSS v4 — all configuration via @theme directive.
+ * No tailwind.config.js required.
+ *
+ * Structure:
+ *   1. Tailwind import
+ *   2. @theme — design tokens (colors, fonts, spacing, shadows, animations)
+ *   3. Base resets and global element styles
+ *   4. Utility classes (glass, glow, gradient text, noise texture)
+ *   5. Scrollbar styling
+ *   6. Animation keyframes
+ * ═══════════════════════════════════════════════════════
+ */
+
+@import "tailwindcss";
+
 /* ═══════════════════════════════════════════════════════
-   F15 RESPONSIVE LAYOUT SAFETY PATCHES
-   Keeps app shell, cards, text, and media from overflowing
-   on desktop, tablet, and mobile.
+   DESIGN TOKENS — @theme
+   All custom values live here. These become Tailwind
+   utility classes automatically in v4.
+   e.g. bg-surface → background: var(--color-surface)
+        font-display → font-family: var(--font-display)
+   ═══════════════════════════════════════════════════════ */
+@theme {
+
+  /* ── Color Palette ──────────────────────────────────── */
+
+  /* Base backgrounds — deep space dark */
+  --color-base:         #08080f;   /* absolute darkest — body bg */
+  --color-base-alt:     #0a0a14;   /* slightly lighter base */
+  --color-surface:      #0d0d1a;   /* card/panel background */
+  --color-surface-alt:  #111126;   /* elevated surface */
+  --color-surface-high: #16162e;   /* highest elevation surface */
+
+  /* Border system */
+  --color-border:       rgba(99, 102, 241, 0.12);   /* subtle indigo border */
+  --color-border-alt:   rgba(99, 102, 241, 0.20);   /* hover border */
+  --color-border-bright:rgba(99, 102, 241, 0.40);   /* active/focus border */
+
+  /* Primary accent — Indigo */
+  --color-indigo-dim:   #312e81;   /* deep indigo */
+  --color-indigo:       #6366f1;   /* primary indigo */
+  --color-indigo-light: #818cf8;   /* lighter indigo */
+  --color-indigo-glow:  rgba(99, 102, 241, 0.15);   /* glow overlay */
+
+  /* Secondary accent — Cyan */
+  --color-cyan-dim:     #164e63;   /* deep cyan */
+  --color-cyan:         #22d3ee;   /* primary cyan */
+  --color-cyan-light:   #67e8f9;   /* lighter cyan */
+  --color-cyan-glow:    rgba(34, 211, 238, 0.12);   /* cyan glow */
+
+  /* Violet accent (gradient partner) */
+  --color-violet:       #7c3aed;
+  --color-violet-light: #a78bfa;
+
+  /* Semantic text colors */
+  --color-text-primary:   #f1f5f9;   /* near-white */
+  --color-text-secondary: #94a3b8;   /* muted slate */
+  --color-text-muted:     #475569;   /* very muted */
+  --color-text-disabled:  #334155;   /* disabled state */
+
+  /* Status colors */
+  --color-success:      #10b981;
+  --color-success-dim:  rgba(16, 185, 129, 0.12);
+  --color-warning:      #f59e0b;
+  --color-warning-dim:  rgba(245, 158, 11, 0.12);
+  --color-error:        #ef4444;
+  --color-error-dim:    rgba(239, 68, 68, 0.12);
+  --color-info:         #3b82f6;
+  --color-info-dim:     rgba(59, 130, 246, 0.12);
+
+  /* ── Typography ─────────────────────────────────────── */
+
+  /* Font families */
+  --font-display: 'Syne', system-ui, sans-serif;
+  --font-body:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  /* Font sizes — fluid typographic scale */
+  --font-size-2xs: 0.625rem;   /* 10px */
+  --font-size-xs:  0.75rem;    /* 12px */
+  --font-size-sm:  0.875rem;   /* 14px */
+  --font-size-md:  1rem;       /* 16px */
+  --font-size-lg:  1.125rem;   /* 18px */
+  --font-size-xl:  1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+  --font-size-5xl: 3rem;       /* 48px */
+  --font-size-6xl: 3.75rem;    /* 60px */
+
+  /* Letter spacing */
+  --tracking-tighter: -0.04em;
+  --tracking-tight:   -0.02em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.02em;
+  --tracking-wider:    0.05em;
+  --tracking-widest:   0.1em;
+
+  /* ── Spacing extras ─────────────────────────────────── */
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+  --spacing-68: 17rem;
+  --spacing-72: 18rem;
+  --spacing-80: 20rem;
+
+  /* Sidebar widths */
+  --sidebar-width:          260px;
+  --sidebar-width-collapsed: 72px;
+
+  /* ── Border Radius ──────────────────────────────────── */
+  --radius-xs:  0.25rem;   /* 4px */
+  --radius-sm:  0.375rem;  /* 6px */
+  --radius-md:  0.5rem;    /* 8px */
+  --radius-lg:  0.75rem;   /* 12px */
+  --radius-xl:  1rem;      /* 16px */
+  --radius-2xl: 1.25rem;   /* 20px */
+  --radius-3xl: 1.5rem;    /* 24px */
+
+  /* ── Shadows ────────────────────────────────────────── */
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md:    0 4px 16px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-lg:    0 10px 40px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-xl:    0 20px 60px rgba(0,0,0,0.7), 0 8px 24px rgba(0,0,0,0.5);
+
+  /* Glow shadows — for accent elements */
+  --shadow-indigo: 0 0 24px rgba(99, 102, 241, 0.25), 0 0 8px rgba(99, 102, 241, 0.15);
+  --shadow-cyan:   0 0 24px rgba(34, 211, 238, 0.20), 0 0 8px rgba(34, 211, 238, 0.12);
+  --shadow-glow:   0 0 40px rgba(99, 102, 241, 0.18), 0 4px 24px rgba(0,0,0,0.5);
+
+  /* ── Transitions ────────────────────────────────────── */
+  --ease-smooth:   cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:   cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:   cubic-bezier(0.4, 0, 0.2, 1);
+
+  --duration-fast:   150ms;
+  --duration-normal: 250ms;
+  --duration-slow:   400ms;
+  --duration-slower: 600ms;
+
+  /* ── Animation durations for keyframes ─────────────── */
+  --animate-shimmer:  2s linear infinite;
+  --animate-pulse-slow: 3s ease-in-out infinite;
+  --animate-float:    6s ease-in-out infinite;
+  --animate-glow:     2s ease-in-out infinite alternate;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE RESETS + GLOBAL ELEMENT STYLES
    ═══════════════════════════════════════════════════════ */
 
-/* Prevent accidental horizontal page scrolling */
-html,
-body,
-#root {
-  width: 100%;
-  max-width: 100%;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-md);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+  background-color: var(--color-base);
+  min-height: 100vh;
   overflow-x: hidden;
+
+  /* Subtle noise texture overlay for depth */
+  background-image:
+    radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      rgba(99, 102, 241, 0.06) 0%,
+      transparent 60%
+    );
 }
 
-/* App shell: desktop spacing is driven by Framer Motion.
-   Mobile must always ignore sidebar margin because sidebar becomes a drawer. */
-@media (max-width: 767px) {
-  .mockiq-main-shell {
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
+/* Root mount point — must fill viewport */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;  /* new stacking context */
 }
 
-/* Safer media defaults */
-img,
-svg,
-video,
-canvas {
-  max-width: 100%;
+/* ── Typography elements ──────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
 }
 
-/* Better text wrapping for AI-generated content and long filenames */
-p,
-span,
-button,
-label,
-textarea,
-input,
-select,
-li {
-  min-width: 0;
+h1 { font-size: var(--font-size-4xl); }
+h2 { font-size: var(--font-size-3xl); }
+h3 { font-size: var(--font-size-2xl); }
+h4 { font-size: var(--font-size-xl); }
+h5 { font-size: var(--font-size-lg); }
+h6 { font-size: var(--font-size-md); }
+
+p {
+  font-family: var(--font-body);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
 }
 
-.break-safe {
-  overflow-wrap: anywhere;
-  word-break: break-word;
+a {
+  color: var(--color-indigo-light);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-smooth);
+}
+a:hover {
+  color: var(--color-cyan);
 }
 
-/* Prevent large headings from breaking compact dashboard/card layouts */
-.card h1,
-.card h2,
-.card h3,
-.card h4,
-.card h5,
-.card h6 {
-  font-size: inherit;
-  line-height: inherit;
+code, pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
 }
 
-/* Consistent focus ring for interactive elements */
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
-[role='button']:focus-visible {
+/* ── Focus visible — accessibility ───────────────────── */
+:focus-visible {
   outline: 2px solid var(--color-indigo);
   outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
-/* Better tap targets on touch devices */
-@media (pointer: coarse) {
-  button,
-  a,
-  [role='button'] {
-    min-height: 40px;
-  }
+/* Remove default focus for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
-/* Mobile page breathing room */
-@media (max-width: 640px) {
-  main {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
-
-  h1 {
-    font-size: 1.85rem;
-  }
-
-  .glass {
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
-  }
+/* ── Selection color ─────────────────────────────────── */
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: var(--color-text-primary);
 }
 
-/* Recharts can overflow if parent width changes during sidebar animation.
-   This keeps charts clipped inside their cards instead of leaking sideways. */
-.recharts-responsive-container,
-.recharts-wrapper {
-  max-width: 100%;
+/* ═══════════════════════════════════════════════════════
+   UTILITY CLASSES
+   Custom utilities not in Tailwind core.
+   These complement Tailwind utility classes.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Glassmorphism ───────────────────────────────────── */
+
+.glass {
+  background: rgba(13, 13, 26, 0.60);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--color-border);
+}
+
+.glass-sm {
+  background: rgba(13, 13, 26, 0.40);
+  backdrop-filter: blur(8px) saturate(160%);
+  -webkit-backdrop-filter: blur(8px) saturate(160%);
+  border: 1px solid var(--color-border);
+}
+
+.glass-strong {
+  background: rgba(13, 13, 26, 0.85);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid var(--color-border-alt);
+}
+
+/* ── Gradient text ───────────────────────────────────── */
+
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--color-indigo-light) 0%,
+    var(--color-cyan) 50%,
+    var(--color-violet-light) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.gradient-text-indigo {
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-cyan {
+  background: linear-gradient(135deg, #22d3ee 0%, #67e8f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Gradient backgrounds ────────────────────────────── */
+
+.gradient-bg {
+  background: linear-gradient(
+    135deg,
+    var(--color-surface) 0%,
+    var(--color-surface-alt) 100%
+  );
+}
+
+.gradient-bg-accent {
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.08) 0%,
+    rgba(34, 211, 238, 0.04) 100%
+  );
+}
+
+.gradient-border {
+  position: relative;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.4),
+    rgba(34, 211, 238, 0.2),
+    rgba(99, 102, 241, 0.1)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Glow effects ────────────────────────────────────── */
+
+.glow-indigo {
+  box-shadow: var(--shadow-indigo);
+}
+
+.glow-cyan {
+  box-shadow: var(--shadow-cyan);
+}
+
+.glow-text-indigo {
+  text-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+.glow-text-cyan {
+  text-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+}
+
+/* ── Card component base ─────────────────────────────── */
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  transition:
+    border-color var(--duration-normal) var(--ease-smooth),
+    box-shadow var(--duration-normal) var(--ease-smooth),
+    transform var(--duration-normal) var(--ease-smooth);
+}
+
+.card:hover {
+  border-color: var(--color-border-alt);
+  box-shadow: var(--shadow-md);
+}
+
+.card-interactive:hover {
+  border-color: var(--color-border-bright);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+/* ── Shimmer loader animation ────────────────────────── */
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    var(--color-surface-alt) 40%,
+    var(--color-surface-high) 50%,
+    var(--color-surface-alt) 60%,
+    var(--color-surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer var(--animate-shimmer);
+}
+
+/* ── Scrollbar ───────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.25);
+  border-radius: 999px;
+  transition: background var(--duration-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.45);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.25) transparent;
+}
+
+/* ── Input base styles ───────────────────────────────── */
+
+.input-base {
+  width: 100%;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 0.625rem 0.875rem;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  outline: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-smooth),
+    box-shadow var(--duration-fast) var(--ease-smooth);
+}
+
+.input-base::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input-base:focus {
+  border-color: var(--color-indigo);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+/* ── Typography utilities ────────────────────────────── */
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.text-primary   { color: var(--color-text-primary); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-muted     { color: var(--color-text-muted); }
+.text-disabled  { color: var(--color-text-disabled); }
+
+/* ── Divider ─────────────────────────────────────────── */
+
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-border-alt) 20%,
+    var(--color-border-alt) 80%,
+    transparent 100%
+  );
+}
+
+/* ── Dot indicator (online/status) ───────────────────── */
+
+.dot-online {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 6px var(--color-success);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ── Noise texture overlay ───────────────────────────── */
+
+.noise {
+  position: relative;
+}
+
+.noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.3;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ── Page transition wrapper ─────────────────────────── */
+
+.page-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-slow) var(--ease-out-expo),
+    transform var(--duration-slow) var(--ease-out-expo);
+}
+
+/* ── Truncate helpers ────────────────────────────────── */
+
+.truncate-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* Form controls should never exceed their container */
-input,
-textarea,
-select {
-  max-width: 100%;
+.truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* Reduce animation for users who prefer less motion */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
+.truncate-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
+
+/* ═══════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════ */
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes glow-pulse {
+  0%   { box-shadow: 0 0 16px rgba(99, 102, 241, 0.2); }
+  100% { box-shadow: 0 0 32px rgba(99, 102, 241, 0.45), 0 0 64px rgba(99, 102, 241, 0.15); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.85); }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-16px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes slide-in-up {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes gradient-shift {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
+}
+
+/* ── Animation utility classes ───────────────────────── */
+
+.animate-float        { animation: float 6s ease-in-out infinite; }
+.animate-glow-pulse   { animation: glow-pulse 2s ease-in-out infinite alternate; }
+.animate-slide-left   { animation: slide-in-left 0.4s var(--ease-out-expo) both; }
+.animate-slide-up     { animation: slide-in-up   0.4s var(--ease-out-expo) both; }
+.animate-fade-in      { animation: fade-in        0.3s var(--ease-smooth)   both; }
+.animate-scale-in     { animation: scale-in       0.3s var(--ease-spring)   both; }
+.animate-spin-slow    { animation: spin-slow      3s   linear infinite; }
+
+/* Staggered animation delays for lists */
+.stagger-1  { animation-delay: 0.05s; }
+.stagger-2  { animation-delay: 0.10s; }
+.stagger-3  { animation-delay: 0.15s; }
+.stagger-4  { animation-delay: 0.20s; }
+.stagger-5  { animation-delay: 0.25s; }
+.stagger-6  { animation-delay: 0.30s; }
